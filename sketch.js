@@ -4,7 +4,7 @@ const DEFAULT_TILE_COLOR_DARK = "#100c13";
 const DEFAULT_TILE_COLOR_LIGHT = "#621f6b";
 const TOP_UNIVERSE_COLOR = "#060147";
 const SCALE = 100;
-const WIDTH_OF_LANDSCAPE = 4100;
+const WIDTH_OF_LANDSCAPE = 3500;
 const HEIGHT_OF_LANDSCAPE = 2000;
 const HEIGHT_MIN = -150;
 const HEIGHT_MAX = 300;
@@ -32,7 +32,7 @@ let starTimer = 0;
 let globalFramePointer = 0;
 // ----------------
 // music
-let music1, music2, music3;
+let music1, music2, music3, music4, music5;
 let currentMusic;
 
 //
@@ -90,10 +90,12 @@ function preload() {
   music1 = loadSound("music/music1.mp3");
   music2 = loadSound("music/music2.mp3");
   music3 = loadSound("music/music3.mp3");
+  music4 = loadSound("music/music4.mp3");
+  music5 = loadSound("music/music5.mp3");
 }
 
 function setup() {
-  createCanvas(windowWidth, windowHeight, WEBGL);
+  createCanvas(windowWidth, windowHeight + 122, WEBGL);
   ellipseMode(CENTER);
   rectMode(CENTER);
   for (let y = 0; y <= height; y++) {
@@ -277,7 +279,7 @@ class Sun {
     );
     push();
     // behind the sun
-    translate(0, -400, -1200);
+    translate(0, -400, -1202);
     let baseColor = currentBrightnessColor;
     let baseAlpha = 100;
     let maxDiameter = map(celestialBodyStrength, 0.1, 1, 2.2, 3) * this.radius;
@@ -369,7 +371,7 @@ function drawUniverseBackground() {
   const topColor = color(TOP_UNIVERSE_COLOR);
   const bottomColor = currentCelestialBodyBottomUniverseColor;
   push();
-  translate(-width / 2, -height / 2 - 600, -1202);
+  translate(-width / 2, -height / 2 - 710, -1202);
   for (let y = 0; y <= height; y++) {
     const inter = map(y, 0, height, 0, 1);
     const c = lerpColor(topColor, bottomColor, inter);
@@ -392,7 +394,7 @@ class SmallStar {
     push();
     translate(
       -width / 2 + this.position.x,
-      -height / 2 + this.position.y - 600,
+      -height / 2 + this.position.y - 720,
       -1202
     );
     stroke(STARS_AND_METEOR_COLOR);
@@ -423,7 +425,7 @@ class MediumStar extends SmallStar {
     push();
     translate(
       -width / 2 + this.position.x,
-      -height / 2 + this.position.y - 600,
+      -height / 2 + this.position.y - 720,
       -1202
     );
     stroke(STARS_AND_METEOR_COLOR);
@@ -440,7 +442,7 @@ class MediumStar extends SmallStar {
     push();
     translate(
       -width / 2 + this.position.x,
-      -height / 2 + this.position.y - 600,
+      -height / 2 + this.position.y - 720,
       -1202
     );
     stroke(STARS_AND_METEOR_COLOR);
@@ -492,7 +494,7 @@ class MeteorAgent {
   draw() {
     this.carefulDestroy();
     push();
-    translate(-width / 2, -height / 2 - 600, -1202);
+    translate(-width / 2, -height / 2 - 720, -1202);
     noStroke();
     fill(STARS_AND_METEOR_COLOR);
     for (let i = 0; i < METEOR_TAIL_LENGTH; i++) {
@@ -507,7 +509,7 @@ class MeteorAgent {
   }
 
   carefulDestroy() {
-    if (this.position.y >= height) {
+    if (this.position.y >= height + 200) {
       activeMeteor = null;
     }
   }
@@ -537,17 +539,16 @@ function keyPressed() {
 function isCloseToLeftCornerOfThePlane(x, y) {
   const leftCorner = createVector(0, HEIGHT_OF_LANDSCAPE);
   const distance = dist(x, y, leftCorner.x, leftCorner.y);
-  return distance < 1450;
+  return distance < 1250;
 }
 
 function isCloseToRightCornerOfThePlane(x, y) {
   const right_corner = createVector(WIDTH_OF_LANDSCAPE, HEIGHT_OF_LANDSCAPE);
   const distance = dist(x, y, right_corner.x, right_corner.y);
-  return distance < 1450;
+  return distance < 1250;
 }
 
 function musicHandler() {
-  // currentMusic.setVolume(volumeOfMusic);
   if (currentMusic.isPlaying() || !startedFlag) {
     return;
   }
@@ -556,8 +557,13 @@ function musicHandler() {
   } else if (currentMusic === music2) {
     currentMusic = music3;
   } else if (currentMusic === music3) {
+    currentMusic = music4;
+  } else if (currentMusic === music4) {
+    currentMusic = music5;
+  } else if (currentMusic === music5) {
     currentMusic = music1;
   }
+
   switch (currentCelestialBody) {
     case CELESTIAL_BODIES_PHASES.MOON:
       currentCelestialBody = CELESTIAL_BODIES_PHASES.SATURN;
@@ -578,5 +584,7 @@ function mouseClicked() {
   if (!startedFlag) {
     currentMusic.play();
     startedFlag = true;
+    let fs = fullscreen();
+    fullscreen(!fs);
   }
 }
